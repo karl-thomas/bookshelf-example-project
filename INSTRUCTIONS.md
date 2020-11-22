@@ -40,7 +40,7 @@ component with a great API and fantastic accessibility characteristics.
 two individual dialogs and toggle which is open based on a `openModal` state
 which can be set to `none`, `login`, or `register`.
 
-💰 Don't forget to include the styles: `import '@reach/dialog/styles.css'`
+💰 Don't forget to include the styles: `  `
 
 **Files:**
 
