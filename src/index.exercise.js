@@ -1,56 +1,104 @@
-import React from 'react'
-import ReactDom from 'react-dom'
-import {Logo} from './components/logo'
-import {Dialog} from '@reach/dialog'
+/** @jsx jsx */
+import {css, jsx} from '@emotion/core'
+import 'bootstrap/dist/css/bootstrap-reboot.css'
 import '@reach/dialog/styles.css'
+import * as React from 'react'
+import ReactDOM from 'react-dom'
+import {Button, Input, FormGroup} from './components/lib'
+import {Modal, ModalContents, ModalOpenButton} from './components/modal'
+import {Logo} from './components/logo'
 
-const LoginDialog = ({onDismiss = () => {}, ...props}) => (
-  <Dialog aria-label="login form" onDismiss={onDismiss} {...props}>
-    <h2>Welcome Back</h2>
-    <button onClick={onDismiss}>close</button>
-    <LoginForm buttonText="login" onSubmit={console.log} />
-  </Dialog>
-)
-
-const RegisterDialog = ({onDismiss = () => {}, ...props}) => (
-  <Dialog aria-label="register form" onDismiss={onDismiss} {...props}>
-    <h2>Howdy Pardner</h2>
-    <button onClick={onDismiss}>close</button>
-    <LoginForm buttonText="register" onSubmit={console.log} />
-  </Dialog>
-)
-
-const LoginForm = ({buttonText, onSubmit}) => {
-  const handleSubmit = event => {
+function LoginForm({onSubmit, submitButton}) {
+  function handleSubmit(event) {
     event.preventDefault()
     const {username, password} = event.target.elements
-    onSubmit({username: username.value, password: password.value})
-  }
 
+    onSubmit({
+      username: username.value,
+      password: password.value,
+    })
+  }
   return (
-    <form onSubmit={handleSubmit}>
-      <label htmlFor="username">Username: </label>
-      <input type="text" id="username" />
-      <label htmlFor="password">Password: </label>
-      <input type="password" id="password" />
-      <button type="submit">{buttonText}</button>
+    <form
+      onSubmit={handleSubmit}
+      css={css({
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'stretch',
+        '> div': {
+          margin: '10px auto',
+          width: '100%',
+          maxWidth: '300px',
+        },
+      })}
+    >
+      <FormGroup>
+        <label htmlFor="username">Username</label>
+        <Input id="username" />
+      </FormGroup>
+      <FormGroup>
+        <label htmlFor="password">Password</label>
+        <Input id="password" type="password" />
+      </FormGroup>
+      <div>{React.cloneElement(submitButton, {type: 'submit'})}</div>
     </form>
   )
 }
 
-const App = () => {
-  const [showModal, setShowModal] = React.useState('none')
-  const close = () => setShowModal('none')
+function App() {
+  function login(formData) {
+    console.log('login', formData)
+  }
+
+  function register(formData) {
+    console.log('register', formData)
+  }
+
   return (
-    <>
-      <Logo />
+    <div
+      css={css({
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '100vh',
+      })}
+    >
+      <Logo width="80" height="80" />
       <h1>Bookshelf</h1>
-      <button onClick={() => setShowModal('login')}>Login</button>
-      <button onClick={() => setShowModal('register')}>Register</button>
-      <LoginDialog onDismiss={close} isOpen={showModal === 'login'} />
-      <RegisterDialog onDismiss={close} isOpen={showModal === 'register'} />
-    </>
+      <div
+        css={css({
+          display: 'grid',
+          gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+          gridGap: '0.75rem',
+        })}
+      >
+        <Modal>
+          <ModalOpenButton>
+            <Button variant="primary">Login</Button>
+          </ModalOpenButton>
+          <ModalContents aria-label="Login form" title="Login">
+            <LoginForm
+              onSubmit={login}
+              submitButton={<Button variant="primary">Login</Button>}
+            />
+          </ModalContents>
+        </Modal>
+        <Modal>
+          <ModalOpenButton>
+            <Button variant="secondary">Register</Button>
+          </ModalOpenButton>
+          <ModalContents aria-label="Registration form" title="Register">
+            <LoginForm
+              onSubmit={register}
+              submitButton={<Button variant="secondary">Register</Button>}
+            />
+          </ModalContents>
+        </Modal>
+      </div>
+    </div>
   )
 }
 
-ReactDom.render(<App />, document.getElementById('root'))
+ReactDOM.render(<App />, document.getElementById('root'))
