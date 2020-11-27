@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-import ReactDOM from 'react-dom'
-import {screen} from '@testing-library/react'
-=======
 import chalk from 'chalk'
 import ReactDOM from 'react-dom'
 import {screen, prettyDOM} from '@testing-library/react'
@@ -19,7 +15,6 @@ function withMessage(cb, message, {solo = true} = {}) {
     throw error
   }
 }
->>>>>>> exercises/02-styles
 
 test('renders the app', () => {
   const root = document.createElement('div')
@@ -33,8 +28,6 @@ test('renders the app', () => {
   screen.getByRole('button', {name: /Login/i})
   screen.getByRole('button', {name: /Register/i})
 
-<<<<<<< HEAD
-=======
   const cssEl = document.body.querySelector('[css]')
   withMessage(
     () => expect(cssEl).toBeNull(),
@@ -58,7 +51,6 @@ ${prettyDOM(cssEl)}
     `None of the elements are styled by emotion. Make sure to render a styled component and use the css prop.`,
   )
 
->>>>>>> exercises/02-styles
   // cleanup
   ReactDOM.unmountComponentAtNode(root)
   document.body.removeChild(root)
