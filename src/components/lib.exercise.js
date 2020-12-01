@@ -9,7 +9,8 @@ const spin = keyframes`
   from {transform:rotate(0deg);}
   to {transform:rotate(360deg);}
 `
-const Spinner = styled(FaSpinner)({animation: spin})
+const Spinner = styled(FaSpinner)({animation: `${spin} 1s linear infinite`})
+Spinner.defaultProps = {'aria-label': 'loading'}
 
 const buttonVariants = {
   primary: {
