@@ -2,6 +2,14 @@ import styled from '@emotion/styled/macro'
 import {Dialog as ReachDialog} from '@reach/dialog'
 import * as mq from 'styles/media-queries'
 import * as colors from 'styles/colors'
+import {FaSpinner} from 'react-icons/fa'
+import {keyframes} from '@emotion/core'
+
+const spin = keyframes`
+  from {transform:rotate(0deg);}
+  to {transform:rotate(360deg);}
+`
+const Spinner = styled(FaSpinner)({animation: spin})
 
 const buttonVariants = {
   primary: {
@@ -61,4 +69,4 @@ const Dialog = styled(ReachDialog)({
   },
 })
 
-export {CircleButton, Dialog, Button, Input, FormGroup}
+export {CircleButton, Dialog, Button, Input, FormGroup, Spinner}
