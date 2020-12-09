@@ -101,7 +101,7 @@ function ListItemTimeframe({listItem}) {
 }
 
 function NotesTextarea({listItem, user}) {
-  const [mutate, {error, isError}] = useUpdateListItem(user)
+  const [mutate, {error, isError, isLoading}] = useUpdateListItem(user)
   const debouncedMutate = React.useMemo(() => debounceFn(mutate, {wait: 300}), [
     mutate,
   ])
@@ -132,6 +132,7 @@ function NotesTextarea({listItem, user}) {
             css={{marginLeft: 6, fontSize: '0.7em'}}
           />
         ) : null}
+        {isLoading ? Loadin : null}
       </div>
       <Textarea
         id="notes"
