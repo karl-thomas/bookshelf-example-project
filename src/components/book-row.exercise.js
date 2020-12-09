@@ -11,7 +11,7 @@ import {useListItem} from 'utils/list-items'
 function BookRow({user, book}) {
   const {title, author, coverImageUrl} = book
 
-  const {listItem} = useListItem(user, book.id)
+  const listItem = useListItem(user, book.id)
 
   const id = `book-row-book-${book.id}`
 

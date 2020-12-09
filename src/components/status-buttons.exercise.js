@@ -10,8 +10,6 @@ import {
   FaTimesCircle,
 } from 'react-icons/fa'
 import Tooltip from '@reach/tooltip'
-import {useQuery, useMutation, queryCache} from 'react-query'
-import {client} from 'utils/api-client'
 import {useAsync} from 'utils/hooks'
 import * as colors from 'styles/colors'
 import {CircleButton, Spinner} from './lib'

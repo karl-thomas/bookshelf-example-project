@@ -4,7 +4,7 @@ import {client} from 'utils/api-client'
 function useListItem(user, bookId) {
   const listItems = useListItems(user)
   const listItem = listItems.find(li => li.bookId === bookId) ?? null
-  return {listItem}
+  return listItem
 }
 
 function useListItems(user) {

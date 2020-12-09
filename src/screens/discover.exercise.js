@@ -7,7 +7,7 @@ import {FaSearch, FaTimes} from 'react-icons/fa'
 import * as colors from 'styles/colors'
 import {BookRow} from 'components/book-row'
 import {BookListUL, Spinner, Input} from 'components/lib'
-import {useBookSearch} from 'utils/books'
+import {refetchBookSearchQuery, useBookSearch} from 'utils/books'
 
 function DiscoverBooksScreen({user}) {
   const [query, setQuery] = React.useState('')
@@ -23,11 +23,8 @@ function DiscoverBooksScreen({user}) {
   } = useBookSearch(query, user)
 
   React.useEffect(() => {
-    if (!queried) {
-      return
-    }
-    refetch({query})
-  }, [query, queried, refetch])
+    return () => refetchBookSearchQuery(user)
+  }, [query, queried, refetch, user])
 
   function handleSearchSubmit(event) {
     event.preventDefault()
