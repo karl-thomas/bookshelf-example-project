@@ -1,9 +1,11 @@
 import {queryCache, useMutation, useQuery} from 'react-query'
 import {client} from 'utils/api-client'
+import {setQueryDataForBook} from './books.extra-6'
 
 function useListItem(user, bookId) {
   const listItems = useListItems(user)
   const listItem = listItems.find(li => li.bookId === bookId) ?? null
+  console.log(listItem)
   return listItem
 }
 
@@ -12,6 +14,13 @@ function useListItems(user) {
     queryKey: 'list-items',
     queryFn: () =>
       client('list-items', {token: user.token}).then(data => data.listItems),
+    config: {
+      onSuccess: listItems => {
+        for (const listItem of listItems) {
+          setQueryDataForBook(listItem.book)
+        }
+      },
+    },
   })
   return listItems ?? []
 }
