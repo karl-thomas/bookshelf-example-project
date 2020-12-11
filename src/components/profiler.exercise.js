@@ -20,7 +20,7 @@ function Profiler({id, metadata, children}) {
         baseDuration,
         startTime,
         commitTime,
-        interactions,
+        interactions: [...interactions],
       },
     })
   }
@@ -28,3 +28,4 @@ function Profiler({id, metadata, children}) {
 }
 
 export {Profiler}
+export {unstable_trace as trace, unstable_wrap as wrap} from 'scheduler/tracing'
