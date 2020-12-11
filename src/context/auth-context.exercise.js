@@ -6,6 +6,7 @@ import * as auth from 'auth-provider'
 import {client} from 'utils/api-client'
 import {useAsync} from 'utils/hooks'
 import {FullPageSpinner, FullPageErrorFallback} from 'components/lib'
+import {queryCache} from 'react-query'
 
 // initiate user request when module is loaded
 const userPromise = getUser()
@@ -15,8 +16,9 @@ async function getUser() {
 
   const token = await auth.getToken()
   if (token) {
-    const data = await client('me', {token})
+    const data = await client('bootstrap', {token})
     user = data.user
+    queryCache.setQueryData('list-items', data.listItems)
   }
 
   return user

@@ -116,4 +116,3 @@ After the instruction, if you want to remember what you've just learned, then
 fill out the elaboration and feedback form:
 
 https://ws.kcd.im/?ws=Build%20React%20Apps&e=10%3A%20Render%20as%20you%20fetch&em=
-****
