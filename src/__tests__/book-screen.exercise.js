@@ -1,60 +1,20 @@
 // 🐨 here are the things you're going to need for this test:
 import * as React from 'react'
 import {
-  render as rtlRender,
+  render,
   screen,
-  waitFor,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
-import {queryCache} from 'react-query'
-import {buildUser, buildBook} from 'test/generate'
-import * as auth from 'auth-provider'
-import {AppProviders} from 'context'
+  waitForLoadingToFinish,
+  userEvent,
+} from 'test/app-test-utils'
+import {buildBook} from 'test/generate'
 import {App} from 'app'
-import {server} from 'test/server/test-server'
-import * as usersDB from 'test/data/users'
 import * as booksDB from 'test/data/books'
-import * as listItemsDB from 'test/data/list-items'
-import userEvent from '@testing-library/user-event'
-
-afterEach(async () => {
-  queryCache.clear()
-  await Promise.all([
-    auth.logout(),
-    usersDB.reset(),
-    booksDB.reset(),
-    listItemsDB.reset(),
-  ])
-})
-
-async function createAuthUser() {
-  const user = buildUser()
-  await usersDB.create(user)
-  const authUser = await usersDB.authenticate(user)
-  window.localStorage.setItem(auth.localStorageKey, authUser.token)
-  return authUser
-}
-
-async function render(ui, {route = '/list', user, ...options}) {
-  user = typeof user === undefined ? createAuthUser() : user
-  window.history.pushState({}, 'Test page', route)
-  const result = rtlRender(ui, {wrapper: AppProviders, ...options})
-  await waitForLoadingToFinish()
-  return {...result, user}
-}
-
-async function waitForLoadingToFinish() {
-  await waitForElementToBeRemoved(() => [
-    ...screen.queryAllByLabelText(/loading/i),
-    ...screen.queryAllByText(/loading/i),
-  ])
-}
 
 test('renders all the book information', async () => {
   const book = await booksDB.create(buildBook())
   const route = `/book/${book.id}`
 
-  render(<App />, {route})
+  await render(<App />, {route})
 
   expect(screen.getByRole('heading', {name: book.title})).toBeInTheDocument()
   expect(screen.getByText(book.author)).toBeInTheDocument()
@@ -71,7 +31,7 @@ test('renders all the book information', async () => {
   const book = await booksDB.create(buildBook())
   const route = `/book/${book.id}`
 
-  render(<App />, {route})
+  await render(<App />, {route})
 
   userEvent.click(screen.getByRole('button', {name: /add to list/i}))
   await waitForLoadingToFinish()
