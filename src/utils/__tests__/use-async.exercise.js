@@ -37,6 +37,28 @@ function getAsyncState(overrides) {
   }
 }
 
+const whileLoading = (overrides = []) => ({
+  status: 'pending',
+  isLoading: true,
+  isIdle: false,
+  ...overrides,
+})
+const withData = (data, overrides = {}) => ({
+  data,
+  status: 'resolved',
+  isSuccess: true,
+  isIdle: false,
+  ...overrides,
+})
+
+const withError = (error, overrides = {}) => ({
+  error,
+  status: 'rejected',
+  isError: true,
+  isIdle: false,
+  ...overrides,
+})
+
 test('calling run with a promise which resolves', async () => {
   const {promise, resolve} = deferred()
   const {result} = renderHook(() => useAsync())
@@ -45,22 +67,13 @@ test('calling run with a promise which resolves', async () => {
   act(() => {
     p = result.current.run(promise)
   })
-  expect(result.current).toEqual(
-    getAsyncState({status: 'pending', isLoading: true, isIdle: false}),
-  )
+  expect(result.current).toEqual(getAsyncState(whileLoading()))
   const resolvedValue = Symbol('resolved value')
   await act(async () => {
     resolve(resolvedValue)
     await p
   })
-  expect(result.current).toEqual(
-    getAsyncState({
-      status: 'resolved',
-      data: resolvedValue,
-      isSuccess: true,
-      isIdle: false,
-    }),
-  )
+  expect(result.current).toEqual(getAsyncState(withData(resolvedValue)))
 
   act(() => {
     result.current.reset()
@@ -76,13 +89,7 @@ test('calling run with a promise which rejects', async () => {
   act(() => {
     p = result.current.run(promise)
   })
-  expect(result.current).toEqual(
-    getAsyncState({
-      status: 'pending',
-      isLoading: true,
-      isIdle: false,
-    }),
-  )
+  expect(result.current).toEqual(getAsyncState(whileLoading()))
   const rejectedValue = Symbol('rejected value')
   await act(async () => {
     reject(rejectedValue)
@@ -90,28 +97,14 @@ test('calling run with a promise which rejects', async () => {
       /* ignore erorr */
     })
   })
-  expect(result.current).toEqual(
-    getAsyncState({
-      error: rejectedValue,
-      status: 'rejected',
-      isError: true,
-      isIdle: false,
-    }),
-  )
+  expect(result.current).toEqual(getAsyncState(withError(rejectedValue)))
 })
 
 test('can specify an initial state', () => {
   const mockData = Symbol('resolved value')
   const customInitialState = {status: 'resolved', data: mockData}
   const {result} = renderHook(() => useAsync(customInitialState))
-  expect(result.current).toEqual(
-    getAsyncState({
-      status: 'resolved',
-      data: mockData,
-      isSuccess: true,
-      isIdle: false,
-    }),
-  )
+  expect(result.current).toEqual(getAsyncState(withData(mockData)))
 })
 
 test('can set the data', () => {
@@ -120,14 +113,7 @@ test('can set the data', () => {
   act(() => {
     result.current.setData(mockData)
   })
-  expect(result.current).toEqual(
-    getAsyncState({
-      status: 'resolved',
-      data: mockData,
-      isSuccess: true,
-      isIdle: false,
-    }),
-  )
+  expect(result.current).toEqual(getAsyncState(withData(mockData)))
 })
 
 test('can set the error', () => {
@@ -136,14 +122,7 @@ test('can set the error', () => {
   act(() => {
     result.current.setError(mockError)
   })
-  expect(result.current).toEqual(
-    getAsyncState({
-      status: 'rejected',
-      error: mockError,
-      isError: true,
-      isIdle: false,
-    }),
-  )
+  expect(result.current).toEqual(getAsyncState(withError(mockError)))
 })
 
 test('No state updates happen if the component is unmounted while pending', async () => {
