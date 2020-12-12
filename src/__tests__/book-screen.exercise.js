@@ -1,7 +1,7 @@
 // 🐨 here are the things you're going to need for this test:
 import * as React from 'react'
 import {
-  render,
+  render as rtlRender,
   screen,
   waitFor,
   waitForElementToBeRemoved,
@@ -27,7 +27,7 @@ afterEach(async () => {
   ])
 })
 
-async function createUser() {
+async function createAuthUser() {
   const user = buildUser()
   await usersDB.create(user)
   const authUser = await usersDB.authenticate(user)
@@ -35,18 +35,26 @@ async function createUser() {
   return authUser
 }
 
-test('renders all the book information', async () => {
-  await createUser()
-  const book = await booksDB.create(buildBook())
+function render(ui, options = {}) {
+  return rtlRender(ui, {wrapper: AppProviders, ...options})
+}
 
-  window.history.pushState({}, book.title, `/book/${book.id}`)
-
-  render(<App />, {wrapper: AppProviders})
-
+async function waitForLoadingToFinish() {
   await waitForElementToBeRemoved(() => [
     ...screen.queryAllByLabelText(/loading/i),
     ...screen.queryAllByText(/loading/i),
   ])
+}
+
+test('renders all the book information', async () => {
+  await createAuthUser()
+  const book = await booksDB.create(buildBook())
+
+  window.history.pushState({}, book.title, `/book/${book.id}`)
+
+  render(<App />)
+
+  await waitForLoadingToFinish()
 
   expect(screen.getByRole('heading', {name: book.title})).toBeInTheDocument()
   expect(screen.getByText(book.author)).toBeInTheDocument()
@@ -60,20 +68,17 @@ test('renders all the book information', async () => {
 })
 
 test('renders all the book information', async () => {
-  await createUser()
+  await createAuthUser()
   const book = await booksDB.create(buildBook())
 
   window.history.pushState({}, book.title, `/book/${book.id}`)
 
-  render(<App />, {wrapper: AppProviders})
-
-  await waitForElementToBeRemoved(() => [
-    ...screen.queryAllByLabelText(/loading/i),
-    ...screen.queryAllByText(/loading/i),
-  ])
+  render(<App />)
+  await waitForLoadingToFinish()
 
   userEvent.click(screen.getByRole('button', {name: /add to list/i}))
-  await waitForElementToBeRemoved(() => screen.queryAllByLabelText(/loading/i))
+  await waitForLoadingToFinish()
+
   expect(
     screen.queryByRole('button', {name: /add to list/i}),
   ).not.toBeInTheDocument()
