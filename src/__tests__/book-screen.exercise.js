@@ -27,7 +27,7 @@ test('renders all the book information', async () => {
   expect(screen.getByRole('button', {name: /add to list/i})).toBeInTheDocument()
 })
 
-test('renders all the book information', async () => {
+test('can create a list item for the book', async () => {
   const book = await booksDB.create(buildBook())
   const route = `/book/${book.id}`
 
