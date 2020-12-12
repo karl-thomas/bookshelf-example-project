@@ -35,8 +35,12 @@ async function createAuthUser() {
   return authUser
 }
 
-function render(ui, options = {}) {
-  return rtlRender(ui, {wrapper: AppProviders, ...options})
+async function render(ui, {route = '/list', user, ...options}) {
+  user = typeof user === undefined ? createAuthUser() : user
+  window.history.pushState({}, 'Test page', route)
+  const result = rtlRender(ui, {wrapper: AppProviders, ...options})
+  await waitForLoadingToFinish()
+  return {...result, user}
 }
 
 async function waitForLoadingToFinish() {
@@ -47,14 +51,10 @@ async function waitForLoadingToFinish() {
 }
 
 test('renders all the book information', async () => {
-  await createAuthUser()
   const book = await booksDB.create(buildBook())
+  const route = `/book/${book.id}`
 
-  window.history.pushState({}, book.title, `/book/${book.id}`)
-
-  render(<App />)
-
-  await waitForLoadingToFinish()
+  render(<App />, {route})
 
   expect(screen.getByRole('heading', {name: book.title})).toBeInTheDocument()
   expect(screen.getByText(book.author)).toBeInTheDocument()
@@ -68,13 +68,10 @@ test('renders all the book information', async () => {
 })
 
 test('renders all the book information', async () => {
-  await createAuthUser()
   const book = await booksDB.create(buildBook())
+  const route = `/book/${book.id}`
 
-  window.history.pushState({}, book.title, `/book/${book.id}`)
-
-  render(<App />)
-  await waitForLoadingToFinish()
+  render(<App />, {route})
 
   userEvent.click(screen.getByRole('button', {name: /add to list/i}))
   await waitForLoadingToFinish()
